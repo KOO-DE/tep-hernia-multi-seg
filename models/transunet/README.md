@@ -1,5 +1,7 @@
 # TransUNet
 
+> This repository is being updated. Reproduction instructions and the evaluation code will be finalized before publication.
+
 | Item | Value |
 |---|---|
 | Upstream | [Beckschen/TransUNet](https://github.com/Beckschen/TransUNet) |
