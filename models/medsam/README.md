@@ -1,5 +1,7 @@
 # MedSAM
 
+> This repository is being updated. Reproduction instructions and the evaluation code will be finalized before publication.
+
 | Item | Value |
 |---|---|
 | Upstream | [bowang-lab/MedSAM](https://github.com/bowang-lab/MedSAM) |
