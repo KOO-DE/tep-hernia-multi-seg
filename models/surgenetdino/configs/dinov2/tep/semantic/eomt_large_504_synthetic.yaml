@@ -1,0 +1,65 @@
+trainer:
+  max_epochs: 100
+  logger:
+    class_path: lightning.pytorch.loggers.CSVLogger
+    init_args:
+      save_dir: logs
+      name: syn_aug
+  callbacks:
+    - class_path: training.plot_callback.TrainingCurvePlotCallback
+      init_args:
+        save_dir: logs/syn_aug/curves_18
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: metrics/val_dice_fg
+        patience: 15
+        mode: max
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        monitor: metrics/val_dice_fg100, 200
+        mode: max
+        save_top_k: 1
+        filename: best
+
+model:
+  class_path: training.mask_classification_semantic.MaskClassificationSemantic
+  init_args:
+    lr: 7e-5
+    lr_mult: 0.1
+    llrd: 0.8
+    weight_decay: 0.05
+    warmup_steps: [100, 200]
+    attn_mask_annealing_enabled: True
+    attn_mask_annealing_start_steps: [0, 500, 1000, 1500]
+    attn_mask_annealing_end_steps: [500, 1000, 1500, 2000]
+    ignore_idx: 255
+    load_ckpt_class_head: False
+    ckpt_path: weights/DINOv2_ViTl14_size336_SurgeNetXL_EoMT.pth
+    freeze_strategy: full
+    network:
+      class_path: models.eomt.EoMT
+      init_args:
+        num_q: 100
+        num_blocks: 4
+        encoder:
+          class_path: models.vit.ViT
+          init_args:
+            backbone_name: vit_large_patch14_dinov2
+            patch_size: 14
+
+data:
+  class_path: datasets.tep_semantic.TEPSemantic
+  init_args:
+    path: ./TEP_dataset/ro  # 자동 교체됨
+    split_train: train_syn
+    split_val: tune
+    img_size: [504, 504]
+    num_classes: 5
+    batch_size: 4
+    num_workers: 4
+    color_jitter_enabled: True
+    scale_range: [0.75, 1.5]
+    syn_color_jitter_enabled: True
+    syn_scale_range: [0.9, 1.1]   # 또는 [0.8, 1.2]로 mild하게
+    # color_jitter_enabled: False
+    # scale_range: [1.0, 1.0]
